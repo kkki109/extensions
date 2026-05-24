@@ -36,12 +36,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-      # 🚀 PASO CORREGIDO: Ejecutamos directamente el generador del catálogo
+      # 🚀 Forzamos la ejecución directa del script de Node modificado
       - name: Build Plugins Manifest
         run: node scripts/build-plugin-manifest.js
         shell: bash
         
-      # 🛡️ DESPLIEGUE SEGURO: Solo sube cambios si la carpeta existe
+      # 🛡️ Solo sube los cambios si la carpeta .dist se generó con éxito
       - name: Deploy to GitHub Pages or Commit Files
         run: |
           git config --local user.email "action@github.com"

@@ -20,12 +20,11 @@ const USER_CONTENT_LINK = process.env.USER_CONTENT_BASE
   : `https://raw.githubusercontent.com/${USERNAME}/${REPO}/${BRANCH}`;
 
 const STATIC_LINK = `${USER_CONTENT_LINK}/public/static`;
-// Use legacy .js/src/plugins path for backward compatibility
 const PLUGIN_LINK = `${USER_CONTENT_LINK}/.js/src/plugins`;
 
 const DIST_DIR = '.dist';
 
-let json = [];
+// Forzar la creación de la carpeta desde el inicio del script
 if (!fs.existsSync(DIST_DIR)) {
   fs.mkdirSync(DIST_DIR);
 }
@@ -52,7 +51,6 @@ if (ONLY_NEW) {
   }
 }
 
-// Simple semver comparison: "1.2.3" < "1.2.4"
 function compareVersions(a, b) {
   const pa = a.split('.').map(Number);
   const pb = b.split('.').map(Number);
@@ -82,13 +80,11 @@ const createRecursiveProxy = () => {
 };
 
 const proxy = createRecursiveProxy();
-
 const _require = () => proxy;
-
 const COMPILED_PLUGIN_DIR = './.js/plugins';
 
 for (let language in languages) {
-  // 🛡️ PARCHE 1: Forzar a saltar cualquier idioma que no sea español
+  // 🛡️ FILTRO 1: Ignorar cualquier carpeta de idioma que no sea Spanish
   if (language.toLowerCase() !== 'spanish') continue;
 
   console.log(
@@ -122,13 +118,11 @@ for (let language in languages) {
       instance;
     const normalisedName = name.replace(/\[.*\]/, '');
 
-    // --only-new logic
     if (
       ONLY_NEW &&
       existingPlugins[id] &&
       compareVersions(existingPlugins[id].version, version) >= 0
     ) {
-      // console.log(`   Skipping ${name} (${id}) - not newer`, '\r🔁');
       return;
     }
 
@@ -206,9 +200,8 @@ if (!ONLY_NEW)
     `,
   );
 
-// check for broken plugins
 for (let language in languages) {
-  // 🛡️ PARCHE 2: Forzar a saltar carpetas inexistentes en la verificación final
+  // 🛡️ FILTRO 2: No revisar errores en carpetas borradas
   if (language.toLowerCase() !== 'spanish') continue;
 
   const tsFiles = fs.readdirSync(
@@ -233,7 +226,6 @@ const totalPluginsWithFilter = Object.values(
   pluginsWithFiltersPerLanguage,
 ).reduce((a, b) => a + b, 0);
 
-// Markdown table for GitHub Actions
 console.warn('\n| Language | Plugins (With Filters) |');
 console.warn('|----------|------------------------|');
 for (const language of Object.keys(languages)) {
