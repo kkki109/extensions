@@ -36,14 +36,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-      - name: Publish Plugins (Fork)
-        run: npm run publish:plugins -- --all-branches
+      # 🚀 PASO CORREGIDO: Ejecutamos directamente el generador del catálogo
+      - name: Build Plugins Manifest
+        run: node scripts/build-plugin-manifest.js
         shell: bash
         
+      # 🛡️ DESPLIEGUE SEGURO: Solo sube cambios si la carpeta existe
       - name: Deploy to GitHub Pages or Commit Files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add .dist/
-          git commit -m "Update plugins catalog" || exit 0
-          git push origin master
+          if [ -d ".dist" ]; then
+            git add .dist/
+            git commit -m "Update plugins catalog" && git push origin master || echo "No hay cambios para subir"
+          else
+            echo "Error: La carpeta .dist no se creó." && exit 1
+          fi
