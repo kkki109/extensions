@@ -88,6 +88,9 @@ const _require = () => proxy;
 const COMPILED_PLUGIN_DIR = './.js/plugins';
 
 for (let language in languages) {
+  // 🛡️ PARCHE 1: Forzar a saltar cualquier idioma que no sea español
+  if (language.toLowerCase() !== 'spanish') continue;
+
   console.log(
     ` ${language} `
       .padStart(Math.floor((language.length + 32) / 2), '=')
@@ -205,6 +208,9 @@ if (!ONLY_NEW)
 
 // check for broken plugins
 for (let language in languages) {
+  // 🛡️ PARCHE 2: Forzar a saltar carpetas inexistentes en la verificación final
+  if (language.toLowerCase() !== 'spanish') continue;
+
   const tsFiles = fs.readdirSync(
     path.join('./plugins', language.toLocaleLowerCase()),
   );
@@ -231,6 +237,7 @@ const totalPluginsWithFilter = Object.values(
 console.warn('\n| Language | Plugins (With Filters) |');
 console.warn('|----------|------------------------|');
 for (const language of Object.keys(languages)) {
+  if (language.toLowerCase() !== 'spanish') continue;
   console.warn(
     `| ${language} | ${pluginsPerLanguage[language] || 0} (${pluginsWithFiltersPerLanguage[language] || 0}) |`,
   );
