@@ -39,3 +39,11 @@ jobs:
       - name: Publish Plugins (Fork)
         run: npm run publish:plugins -- --all-branches
         shell: bash
+        
+      - name: Deploy to GitHub Pages or Commit Files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .dist/
+          git commit -m "Update plugins catalog" || exit 0
+          git push origin master
