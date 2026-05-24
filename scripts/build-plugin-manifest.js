@@ -24,7 +24,6 @@ const PLUGIN_LINK = `${USER_CONTENT_LINK}/.js/src/plugins`;
 
 const DIST_DIR = '.dist';
 
-// Forzar la creación de la carpeta desde el inicio del script
 if (!fs.existsSync(DIST_DIR)) {
   fs.mkdirSync(DIST_DIR);
 }
@@ -33,6 +32,8 @@ const jsonMinPath = path.join(DIST_DIR, 'plugins.min.json');
 const pluginSet = new Set();
 const pluginsPerLanguage = {};
 const pluginsWithFiltersPerLanguage = {};
+
+let json = []; // Variable global del script bien posicionada
 
 const args = process.argv.slice(2);
 let ONLY_NEW = args.includes('--only-new');
@@ -84,7 +85,6 @@ const _require = () => proxy;
 const COMPILED_PLUGIN_DIR = './.js/plugins';
 
 for (let language in languages) {
-  // 🛡️ FILTRO 1: Ignorar cualquier carpeta de idioma que no sea Spanish
   if (language.toLowerCase() !== 'spanish') continue;
 
   console.log(
@@ -160,6 +160,7 @@ for (let language in languages) {
   });
 }
 
+// Aquí es donde fallaba, ahora 'json' está perfectamente visible
 json.sort((a, b) => {
   if (a.lang === b.lang) return a.id.localeCompare(b.id);
   return 0;
@@ -172,7 +173,7 @@ const totalPlugins = Object.values(pluginsPerLanguage).reduce(
   (a, b) => a + b,
   0,
 );
-if (!ONLY_NEW)
+if (!ONLY_NEW) {
   fs.writeFileSync(
     'total.svg',
     `
@@ -199,9 +200,9 @@ if (!ONLY_NEW)
     </svg>
     `,
   );
+}
 
 for (let language in languages) {
-  // 🛡️ FILTRO 2: No revisar errores en carpetas borradas
   if (language.toLowerCase() !== 'spanish') continue;
 
   const tsFiles = fs.readdirSync(
